@@ -1,17 +1,17 @@
 # cordova-plugin-signature-capture
 Signature and Biometric Data Capture
 
-This plugin provides access to some native dialog UI elements via a global navigator.notification object.
 
-Although the object is attached to the global scoped navigator, it is not available until after the deviceready event.
+### Ejemplo completo para `README.md`
+```markdown
+# Proyecto de Ejemplo
 
-document.addEventListener("deviceready", onDeviceReady, false);
-function onDeviceReady() {
-    console.log(navigator.notification);
+Este proyecto muestra cómo crear un bloque de código en Markdown para GitHub.
+
+## Ejemplo de código en JavaScript
+
+```javascript
+function saludo() {
+  console.log("Hola, mundo!");
 }
-
-Installation
-
-cordova plugin add cordova-plugin-dialogs
-
-Methods
+saludo();
