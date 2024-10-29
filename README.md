@@ -1,17 +1,23 @@
 # cordova-plugin-signature-capture
 Signature and Biometric Data Capture
-
-
-### Ejemplo completo para `README.md`
 ```markdown
-# Proyecto de Ejemplo
+document.getElementById("captureSignature").addEventListener("click", function() {
+            cordova.plugins.SignatureCapture.captureSignature(
+                (result) => {
+                    // Mostrar la imagen de la firma
+                    const imagePath = result.imagePath;
+                    const biometricData = result.biometricData;
 
-Este proyecto muestra cómo crear un bloque de código en Markdown para GitHub.
+                    document.getElementById("signatureImage").src = imagePath;
+                    document.getElementById("signatureImage").style.display = "block";
 
-## Ejemplo de código en JavaScript
-
-```javascript
-function saludo() {
-  console.log("Hola, mundo!");
-}
-saludo();
+                    // Mostrar los datos biométricos en el contenedor
+                    document.getElementById("biometricData").innerText = JSON.stringify(biometricData, null, 2);
+                },
+                (error) => {
+                    console.error("Error al capturar firma:", error);
+                    document.getElementById("biometricData").innerText = "Error: " + error;
+                }
+            );
+        });
+markdown```
