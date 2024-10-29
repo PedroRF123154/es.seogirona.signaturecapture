@@ -12,13 +12,10 @@ cordova.plugins.SignatureCapture.captureSignature(
         const imagePath = result.imagePath;
         const biometricData = result.biometricData;
 
-        document.getElementById("signatureImage").src = imagePath;
-        document.getElementById("signatureImage").style.display = "block";        
-        document.getElementById("biometricData").innerText = JSON.stringify(biometricData, null, 2);
+        
     },
     (error) => {
         console.error("Error al capturar firma:", error);
-        document.getElementById("biometricData").innerText = "Error: " + error;
     }
 );
 ```
