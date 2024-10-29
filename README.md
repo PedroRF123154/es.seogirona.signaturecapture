@@ -8,15 +8,12 @@ cordova plugin add https://github.com/PedroRF123154/cordova-plugin-signature-cap
 ### Example
 ```markdown
 cordova.plugins.SignatureCapture.captureSignature(
-    (result) => {
-        // Mostrar la imagen de la firma
+    (result) => {        
         const imagePath = result.imagePath;
         const biometricData = result.biometricData;
 
         document.getElementById("signatureImage").src = imagePath;
-        /document.getElementById("signatureImage").style.display = "block";
-
-        // Mostrar los datos biométricos en el contenedor
+        document.getElementById("signatureImage").style.display = "block";        
         document.getElementById("biometricData").innerText = JSON.stringify(biometricData, null, 2);
     },
     (error) => {
