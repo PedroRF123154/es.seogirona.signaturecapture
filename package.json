@@ -1,0 +1,17 @@
+{
+  "name": "cordova-plugin-signature-capture",
+  "version": "1.0.0",
+  "description": "A plugin to capture signature with biometric data",
+  "cordova": {
+    "id": "es.seogirona.signaturecapture",
+    "platforms": ["android", "ios"]
+  },
+  "keywords": [
+    "cordova",
+    "signature",
+    "biometric",
+    "plugin"
+  ],
+  "author": "Tu Empresa",
+  "license": "ISC"
+}

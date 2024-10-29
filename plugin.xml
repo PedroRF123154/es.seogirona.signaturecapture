@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="es.seogirona.signaturecapture" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>SignatureCapture</name>
+    <js-module src="www/SignatureCapture.js" name="SignatureCapture">
+        <clobbers target="cordova.plugins.SignatureCapture" />
+    </js-module>
+
+    <platform name="android">
+        <config-file target="config.xml" parent="/*">
+            <feature name="SignatureCapture">
+                <param name="android-package" value="es.seogirona.signaturecapture.SignatureCapture"/>
+            </feature>
+        </config-file>
+        <source-file src="src/android/SignatureCapture.java" target-dir="src/es/seogirona/signaturecapture" />
+    </platform>
+
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="SignatureCapture">
+                <param name="ios-package" value="SignatureCapture"/>
+            </feature>
+        </config-file>
+        <source-file src="src/ios/SignatureCapture.swift" />
+    </platform>
+</plugin>
