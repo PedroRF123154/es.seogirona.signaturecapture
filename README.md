@@ -28,6 +28,5 @@ document.getElementById("captureSignature").addEventListener("click", function()
 });
 ```
 ### Supported Platforms
-
-    Android
-    iOS
+- Android
+- iOS
