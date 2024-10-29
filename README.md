@@ -8,10 +8,10 @@ document.getElementById("captureSignature").addEventListener("click", function()
                     // Mostrar la imagen de la firma
                     const imagePath = result.imagePath;
                     const biometricData = result.biometricData;
-
+            
                     document.getElementById("signatureImage").src = imagePath;
                     document.getElementById("signatureImage").style.display = "block";
-
+            
                     // Mostrar los datos biométricos en el contenedor
                     document.getElementById("biometricData").innerText = JSON.stringify(biometricData, null, 2);
                 },
@@ -20,5 +20,5 @@ document.getElementById("captureSignature").addEventListener("click", function()
                     document.getElementById("biometricData").innerText = "Error: " + error;
                 }
             );
-        });
+});
 ```
