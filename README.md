@@ -1,5 +1,6 @@
 # cordova-plugin-signature-capture
 Signature and Biometric Data Capture
+
 ```markdown
 document.getElementById("captureSignature").addEventListener("click", function() {
             cordova.plugins.SignatureCapture.captureSignature(
@@ -20,4 +21,4 @@ document.getElementById("captureSignature").addEventListener("click", function()
                 }
             );
         });
-markdown```
+```
