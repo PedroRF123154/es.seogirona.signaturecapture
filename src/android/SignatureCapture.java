@@ -223,11 +223,11 @@ public class SignatureCapture extends CordovaPlugin {
     private void saveSignature() {
         try {
             // Guardar la firma en el almacenamiento interno con un nombre único
-            String fileName = "firma_" + System.currentTimeMillis() + ".png";
+            String fileName = "firma-" + System.currentTimeMillis() + ".png";
             File path = new File(cordova.getContext().getFilesDir(), fileName);
 
             try (OutputStream out = new FileOutputStream(path)) {
-                signatureBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                signatureBitmap.compress(Bitmap.CompressFormat.PNG, 50, out);
             }
 
             // Preparar los datos biométricos en formato JSON
