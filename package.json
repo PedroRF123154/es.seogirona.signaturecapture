@@ -1,5 +1,5 @@
 {
-  "name": "cordova-plugin-signature-capture",
+  "name": "es.seogirona.signaturecapture",
   "version": "1.0.0",
   "description": "A plugin to capture signature with biometric data",
   "cordova": {
