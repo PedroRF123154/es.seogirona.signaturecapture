@@ -240,6 +240,7 @@ public class SignatureCapture extends CordovaPlugin {
             // Enviar la ruta de la imagen y los datos biométricos a JavaScript
             JSONObject result = new JSONObject();
             result.put("imagePath", path.getAbsolutePath());
+            result.put("fileName", fileName);
             result.put("biometricData", jsonArray);
 
             callbackContext.success(result);
