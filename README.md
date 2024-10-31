@@ -10,6 +10,7 @@ cordova plugin add https://github.com/PedroRF123154/es.seogirona.signaturecaptur
 cordova.plugins.SignatureCapture.captureSignature(
     (result) => {        
         const imagePath = result.imagePath;
+        const fileName = result.fileName;
         const biometricData = result.biometricData;
 
         document.getElementById("signatureImage").src = imagePath;
