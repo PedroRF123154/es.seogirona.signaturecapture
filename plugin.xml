@@ -13,7 +13,7 @@
 
   <platform name="ios">
     <!-- Si usas Swift en Cordova iOS, esto ayuda a forzar compilación Swift -->
-    <preference name="UseSwiftLanguageVersion" value="5" />
+    <preference name="UseSwiftLanguageVersion" value="5.0" />
 
     <config-file target="config.xml" parent="/*">
       <feature name="SignatureCapture">
