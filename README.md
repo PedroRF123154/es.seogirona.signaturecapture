@@ -22,6 +22,11 @@ cordova.plugins.SignatureCapture.captureSignature(
     }
 );
 ```
+### Installation iOS
+```markdown
+cordova plugin add https://github.com/PedroRF123154/es.seogirona.signaturecapture.git --variable USESWIFTLANGUAGEVERSION=5.0
+```
+
 ### Example iOS
 ```markdown
 document.addEventListener("deviceready", function() {
