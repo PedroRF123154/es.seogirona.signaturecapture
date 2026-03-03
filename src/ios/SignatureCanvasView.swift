@@ -3,9 +3,8 @@ import UIKit
 final class SignatureCanvasView: UIImageView {
 
     var path = UIBezierPath()
-    var onPoint: ((CGPoint, UITouch, TimeInterval) -> Void)?
-    var onBegin: ((CGPoint, UITouch, TimeInterval) -> Void)?
-    var onEnd: ((CGPoint, UITouch, TimeInterval) -> Void)?
+    var onPoint: ((CGPoint, UITouch) -> Void)?
+    var onBegin: ((CGPoint, UITouch) -> Void)?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -14,33 +13,21 @@ final class SignatureCanvasView: UIImageView {
         isMultipleTouchEnabled = false
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }
-        let p = touch.location(in: self)
-        let ts = touch.timestamp
+        guard let t = touches.first else { return }
+        let p = t.location(in: self)
         path.move(to: p)
-        onBegin?(p, touch, ts)
+        onBegin?(p, t)
         drawPath()
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }
-        let p = touch.location(in: self)
-        let ts = touch.timestamp
+        guard let t = touches.first else { return }
+        let p = t.location(in: self)
         path.addLine(to: p)
-        onPoint?(p, touch, ts)
-        drawPath()
-    }
-
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }
-        let p = touch.location(in: self)
-        let ts = touch.timestamp
-        onEnd?(p, touch, ts)
+        onPoint?(p, t)
         drawPath()
     }
 
