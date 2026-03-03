@@ -1,7 +1,7 @@
 # cordova-plugin-signature-capture
 Signature and Biometric Data Capture
 
-### Installation
+### Installation Android
 ```markdown
 cordova plugin add https://github.com/PedroRF123154/es.seogirona.signaturecapture.git
 ```
