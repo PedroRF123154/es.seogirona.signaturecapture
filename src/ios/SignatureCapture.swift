@@ -8,113 +8,142 @@ class SignatureCapture: CDVPlugin {
     var closeButton: UIButton?
     var saveButton: UIButton?
 
+    var path = UIBezierPath()
     var biometricData: [[String: Any]] = []
     var lastPoint: CGPoint = .zero
     var lastTimestamp: TimeInterval = 0
 
-    var signatureCanvas: SignatureCanvasView?
+    var signatureImageView: UIImageView?
+
+    // Para responder a Cordova
     var callbackId: String?
 
+    // ✅ Acción que tu JS llama: "captureSignature"
+    @objc(captureSignature:)
+    func captureSignature(command: CDVInvokedUrlCommand) {
+        // guardamos callbackId y reutilizamos la pantalla
+        self.callbackId = command.callbackId
+        self.openSignatureScreen(command: command)
+    }
+
+    // ✅ Alias opcional por si lo llamas como "openSignatureScreen"
     @objc(openSignatureScreen:)
     func openSignatureScreen(command: CDVInvokedUrlCommand) {
         self.callbackId = command.callbackId
 
         DispatchQueue.main.async {
-            self.biometricData.removeAll()
-            self.lastPoint = .zero
-            self.lastTimestamp = 0
+            // Configurar vista de firma
+            self.signatureView = UIView(frame: UIScreen.main.bounds)
+            self.signatureView?.backgroundColor = .white
 
-            // Vista contenedor
-            let container = UIView(frame: UIScreen.main.bounds)
-            container.backgroundColor = .white
-            self.signatureView = container
-
-            // Horizontal (ojo: esto es “hack”; más adelante te lo dejo fino si quieres)
+            // Bloquear orientación en horizontal (hack)
             UIDevice.current.setValue(UIInterfaceOrientation.landscapeLeft.rawValue, forKey: "orientation")
 
-            // Canvas de firma
-            let canvas = SignatureCanvasView(frame: container.bounds)
-            self.signatureCanvas = canvas
-            container.addSubview(canvas)
+            // Configurar ImageView para la firma
+            self.signatureImageView = UIImageView(frame: UIScreen.main.bounds)
+            self.signatureImageView?.backgroundColor = .white
+            self.signatureImageView?.isUserInteractionEnabled = true
 
-            canvas.onBegin = { [weak self] p, touch in
-                guard let self else { return }
-                self.lastPoint = p
-                self.lastTimestamp = touch.timestamp
-                self.appendBiometric(point: p, touch: touch)
+            if let signatureImageView = self.signatureImageView {
+                self.signatureView?.addSubview(signatureImageView)
             }
 
-            canvas.onPoint = { [weak self] p, touch in
-                guard let self else { return }
-                self.appendBiometric(point: p, touch: touch)
-                self.lastPoint = p
-                self.lastTimestamp = touch.timestamp
+            // Botón Cerrar
+            self.closeButton = UIButton(type: .custom)
+            self.closeButton?.frame = CGRect(x: UIScreen.main.bounds.width - 70, y: 30, width: 50, height: 50)
+            self.closeButton?.backgroundColor = .red
+            self.closeButton?.setTitle("X", for: .normal)
+            self.closeButton?.titleLabel?.font = UIFont.boldSystemFont(ofSize: 24)
+            self.closeButton?.layer.cornerRadius = 25
+            self.closeButton?.addTarget(self, action: #selector(self.closeSignatureScreen), for: .touchUpInside)
+
+            // Botón Guardar
+            self.saveButton = UIButton(type: .custom)
+            self.saveButton?.frame = CGRect(x: 20, y: UIScreen.main.bounds.height - 70, width: 120, height: 50)
+            self.saveButton?.backgroundColor = .blue
+            self.saveButton?.setTitle("Guardar", for: .normal)
+            self.saveButton?.layer.cornerRadius = 10
+            self.saveButton?.addTarget(self, action: #selector(self.saveSignature), for: .touchUpInside)
+
+            if let signatureView = self.signatureView,
+               let closeButton = self.closeButton,
+               let saveButton = self.saveButton {
+                signatureView.addSubview(closeButton)
+                signatureView.addSubview(saveButton)
+                self.viewController.view.addSubview(signatureView)
             }
 
-            // Botón cerrar
-            let close = UIButton(type: .custom)
-            close.frame = CGRect(x: container.bounds.width - 70, y: 30, width: 50, height: 50)
-            close.backgroundColor = .red
-            close.setTitle("X", for: .normal)
-            close.titleLabel?.font = UIFont.boldSystemFont(ofSize: 24)
-            close.layer.cornerRadius = 25
-            close.addTarget(self, action: #selector(self.closeSignatureScreen), for: .touchUpInside)
-            self.closeButton = close
-            container.addSubview(close)
+            // Inicializar el camino de dibujo
+            self.path = UIBezierPath()
+            self.path.lineWidth = 2.0
+            self.biometricData.removeAll()
+            self.lastPoint = .zero
+            self.lastTimestamp = Date().timeIntervalSince1970
 
-            // Botón guardar
-            let save = UIButton(type: .custom)
-            save.frame = CGRect(x: 20, y: container.bounds.height - 70, width: 120, height: 50)
-            save.backgroundColor = .blue
-            save.setTitle("Guardar", for: .normal)
-            save.layer.cornerRadius = 10
-            save.addTarget(self, action: #selector(self.saveSignature), for: .touchUpInside)
-            self.saveButton = save
-            container.addSubview(save)
-
-            self.viewController.view.addSubview(container)
+            // Gesture (solo posición, NO presión real)
+            let panGesture = UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGesture(_:)))
+            self.signatureImageView?.addGestureRecognizer(panGesture)
         }
     }
 
-    private func appendBiometric(point: CGPoint, touch: UITouch) {
-        let ts = touch.timestamp
+    @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+        guard let signatureView = self.signatureImageView else { return }
 
-        let dt = (lastTimestamp > 0) ? (ts - lastTimestamp) : 0
-        let dist = hypot(point.x - lastPoint.x, point.y - lastPoint.y)
-        let speed = (dt > 0) ? (Double(dist) / dt) : 0
+        let currentPoint = gesture.location(in: signatureView)
+        let currentTimestamp = Date().timeIntervalSince1970
 
-        let pressure: Double
-        if touch.maximumPossibleForce > 0 {
-            pressure = Double(touch.force / touch.maximumPossibleForce)
-        } else {
-            pressure = 0
+        let timeDifference = currentTimestamp - self.lastTimestamp
+        let distance = hypot(currentPoint.x - self.lastPoint.x, currentPoint.y - self.lastPoint.y)
+        let speed: Double = (timeDifference > 0) ? (Double(distance) / timeDifference) : 0
+
+        // ✅ Con UIPanGestureRecognizer NO hay UITouch => presión real no disponible
+        let dataPoint: [String: Any] = [
+            "x": Double(currentPoint.x),
+            "y": Double(currentPoint.y),
+            "pressure": 0.0,
+            "timestamp": currentTimestamp,
+            "speed": speed
+        ]
+        biometricData.append(dataPoint)
+
+        if gesture.state == .began {
+            path.move(to: currentPoint)
+            lastPoint = currentPoint
+            lastTimestamp = currentTimestamp
+        } else if gesture.state == .changed {
+            path.addLine(to: currentPoint)
+            lastPoint = currentPoint
+            lastTimestamp = currentTimestamp
         }
 
-        biometricData.append([
-            "x": Double(point.x),
-            "y": Double(point.y),
-            "pressure": pressure,
-            "timestamp": ts,
-            "speed": speed
-        ])
+        UIGraphicsBeginImageContextWithOptions(signatureView.bounds.size, true, 0)
+        signatureImageView?.image?.draw(in: signatureView.bounds)
+        UIColor.black.setStroke()
+        path.stroke()
+        signatureImageView?.image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
     }
 
     @objc func closeSignatureScreen() {
         DispatchQueue.main.async {
             UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+
             self.signatureView?.removeFromSuperview()
             self.signatureView = nil
-            self.signatureCanvas = nil
+            self.closeButton = nil
+            self.saveButton = nil
+            self.signatureImageView = nil
         }
     }
 
     @objc func saveSignature() {
         DispatchQueue.main.async {
-            guard let callbackId = self.callbackId else { return }
+            guard let cb = self.callbackId else { return }
 
-            guard let img = self.signatureCanvas?.image, let data = img.pngData() else {
-                let r = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "No hay firma para guardar")
-                self.commandDelegate.send(r, callbackId: callbackId)
+            guard let signatureImage = self.signatureImageView?.image,
+                  let data = signatureImage.pngData() else {
+                let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "No hay firma para guardar")
+                self.commandDelegate.send(pluginResult, callbackId: cb)
                 self.closeSignatureScreen()
                 return
             }
@@ -125,6 +154,7 @@ class SignatureCapture: CDVPlugin {
             do {
                 try data.write(to: url)
 
+                // Enviamos biometricData como JSON string (como estabas haciendo)
                 let jsonData = try JSONSerialization.data(withJSONObject: self.biometricData, options: [])
                 let jsonString = String(data: jsonData, encoding: .utf8) ?? "[]"
 
@@ -133,11 +163,11 @@ class SignatureCapture: CDVPlugin {
                     "biometricData": jsonString
                 ]
 
-                let r = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: result)
-                self.commandDelegate.send(r, callbackId: callbackId)
+                let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: result)
+                self.commandDelegate.send(pluginResult, callbackId: cb)
             } catch {
-                let r = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Error al guardar la firma")
-                self.commandDelegate.send(r, callbackId: callbackId)
+                let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Error al guardar la firma")
+                self.commandDelegate.send(pluginResult, callbackId: cb)
             }
 
             self.closeSignatureScreen()
