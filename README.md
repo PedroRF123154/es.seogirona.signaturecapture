@@ -28,7 +28,7 @@ document.addEventListener("deviceready", function() {
   document.getElementById("captureSignature").addEventListener("click", function() {
     cordova.plugins.SignatureCapture.captureSignature(
       function(result) {
-        // ✅ mostrar por Base64 (siempre visible)
+        // mostrar por Base64 (siempre visible)
         if (result.imageBase64) {
           document.getElementById("signatureImage").src = "data:image/png;base64," + result.imageBase64;
           document.getElementById("signatureImage").style.display = "block";
