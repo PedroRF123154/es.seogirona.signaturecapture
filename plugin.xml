@@ -1,25 +1,39 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<plugin id="es.seogirona.signaturecapture" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins" xmlns:android="http://schemas.android.com/apk/res/android">
-    <name>SignatureCapture</name>
-    <js-module src="www/SignatureCapture.js" name="SignatureCapture">
-        <clobbers target="cordova.plugins.SignatureCapture" />
-    </js-module>
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="es.seogirona.signaturecapture" version="1.0.0"
+        xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <platform name="android">
-        <config-file target="config.xml" parent="/*">
-            <feature name="SignatureCapture">
-                <param name="android-package" value="es.seogirona.signaturecapture.SignatureCapture"/>
-            </feature>
-        </config-file>
-        <source-file src="src/android/SignatureCapture.java" target-dir="src/es/seogirona/signaturecapture" />
-    </platform>
+  <name>SignatureCapture</name>
+  <description>Signature and Biometric Data Capture</description>
+  <license>Apache-2.0</license>
 
-    <platform name="ios">
-        <config-file target="config.xml" parent="/*">
-            <feature name="SignatureCapture">
-                <param name="ios-package" value="SignatureCapture"/>
-            </feature>
-        </config-file>
-        <source-file src="src/ios/SignatureCapture.swift" />
-    </platform>
+  <js-module src="www/SignatureCapture.js" name="SignatureCapture">
+    <clobbers target="cordova.plugins.SignatureCapture" />
+  </js-module>
+
+  <platform name="ios">
+    <!-- Si usas Swift en Cordova iOS, esto ayuda a forzar compilación Swift -->
+    <preference name="UseSwiftLanguageVersion" value="5" />
+
+    <config-file target="config.xml" parent="/*">
+      <feature name="SignatureCapture">
+        <param name="ios-package" value="SignatureCapture" />
+      </feature>
+    </config-file>
+
+    <source-file src="src/ios/SignatureCapture.swift" />
+    <source-file src="src/ios/SignatureCanvasView.swift" />
+  </platform>
+
+  <platform name="android">
+    <config-file target="res/xml/config.xml" parent="/*">
+      <feature name="SignatureCapture">
+        <param name="android-package" value="es.seogirona.signaturecapture.SignatureCapture" />
+      </feature>
+    </config-file>
+
+    <!-- Ajusta estos paths a tu estructura real de Android -->
+    <source-file src="src/android/SignatureCapture.java" target-dir="src/es/seogirona/signaturecapture" />
+  </platform>
+
 </plugin>
