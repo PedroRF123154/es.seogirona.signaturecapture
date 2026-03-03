@@ -1,11 +1,11 @@
-cordova.define("es.seogirona.signaturecapture.SignatureCapture", function(require, exports, module) {
-  var exec = require('cordova/exec');
+var exec = require('cordova/exec');
 
-  exports.openSignatureScreen = function (success, error) {
-    exec(success, error, "SignatureCapture", "openSignatureScreen", []);
-  };
+// Mantengo TU nombre: captureSignature
+exports.captureSignature = function(success, error) {
+  exec(success, error, "SignatureCapture", "captureSignature", []);
+};
 
-  exports.captureSignature = function (success, error) {
-    exec(success, error, "SignatureCapture", "openSignatureScreen", []);
-  };
-});
+// Alias opcional (por si lo usas en otra parte)
+exports.openSignatureScreen = function(success, error) {
+  exec(success, error, "SignatureCapture", "openSignatureScreen", []);
+};
