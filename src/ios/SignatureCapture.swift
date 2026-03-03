@@ -182,7 +182,7 @@ class SignatureCapture: CDVPlugin {
         }
     }
 
-    // ✅ Devuelve imageBase64 para que SIEMPRE se vea en HTML
+    // Devuelve imageBase64 para que SIEMPRE se vea en HTML
     @objc func saveSignature() {
         DispatchQueue.main.async {
             guard let cb = self.callbackId else { return }
