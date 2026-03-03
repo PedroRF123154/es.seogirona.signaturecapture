@@ -10,8 +10,12 @@
     "cordova",
     "signature",
     "biometric",
-    "plugin"
+    "ecosystem:cordova"
   ],
-  "author": "seogiorna.es",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PedroRF123154/es.seogirona.signaturecapture.git"
+  },
+  "author": "SEO Girona",
   "license": "ISC"
 }
