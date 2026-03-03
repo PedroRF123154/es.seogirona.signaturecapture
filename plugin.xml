@@ -12,7 +12,6 @@
   </js-module>
 
   <platform name="ios">
-    <!-- Si usas Swift en Cordova iOS, esto ayuda a forzar compilación Swift -->
     <preference name="UseSwiftLanguageVersion" value="5.0" />
 
     <config-file target="config.xml" parent="/*">
@@ -22,7 +21,6 @@
     </config-file>
 
     <source-file src="src/ios/SignatureCapture.swift" />
-    <source-file src="src/ios/SignatureCanvasView.swift" />
   </platform>
 
   <platform name="android">
